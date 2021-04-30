@@ -1,17 +1,17 @@
 package wolox.training.models;
 
-import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
     @Column
@@ -20,25 +20,32 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private String image;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private String title;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private String subtitle;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private String publisher;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private String year;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private int pages;
 
-    @Column(nullable = false)
+    @NotNull
+    @Column
     private String isbn;
 
     public Book() {
@@ -46,10 +53,6 @@ public class Book {
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getGenre() {
