@@ -4,23 +4,21 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotOwnedException;
 
-@Entity(name="users")
+@Entity(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private long id;
 
     @NotNull
     private String username;
@@ -79,8 +77,8 @@ public class User {
      *
      * @param book: The book to associate with the user (Book)
      */
-    public void addBook(Book book){
-        if(books.contains(book)){
+    public void addBook(Book book) {
+        if (books.contains(book)) {
             throw new BookAlreadyOwnedException();
         }
         books.add(book);
@@ -92,8 +90,8 @@ public class User {
      * @param book: The book to be disassociated from the user (Book)
      */
 
-    public void removeBook(Book book){
-        if(!books.remove(book)){
+    public void removeBook(Book book) {
+        if (!books.remove(book)) {
             throw new BookNotOwnedException();
         }
     }
