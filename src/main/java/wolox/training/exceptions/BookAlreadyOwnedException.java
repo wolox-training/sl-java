@@ -1,8 +1,8 @@
 package wolox.training.exceptions;
 
-public class BookAlreadyOwnedException extends RuntimeException{
+public class BookAlreadyOwnedException extends RuntimeException {
 
     public BookAlreadyOwnedException() {
-        super("The book are already owned by another user");
+        super("The book are already owned by the user");
     }
 }
