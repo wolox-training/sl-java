@@ -1,5 +1,10 @@
 package wolox.training.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +25,7 @@ import wolox.training.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/api/users")
+@Api
 public class UserController {
 
     @Autowired
@@ -46,7 +52,15 @@ public class UserController {
      * @return the user corresponding to the requested id
      */
     @GetMapping("/{id}")
-    public User findOne(@PathVariable long id) {
+    @ApiOperation(value = "Find a user by its id", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved user"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+
+    public User findOne(
+            @ApiParam(value = "id to find the user", example = "1", required = true)
+            @PathVariable long id) {
         return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 

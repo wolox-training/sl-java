@@ -1,6 +1,8 @@
 package wolox.training.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +17,7 @@ import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotOwnedException;
 
 @Entity(name = "users")
+@ApiModel(description = "Users from the Training APP")
 public class User {
 
     @Id
@@ -29,6 +32,7 @@ public class User {
 
     @NotNull
     @JsonFormat(pattern = "dd-MM-yyyy")
+    @ApiModelProperty(value = "The format of the birthday must be dd-MM-yyyy", example = "13-03-1989")
     private LocalDate birthdate;
 
     @NotNull
