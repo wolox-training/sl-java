@@ -1,5 +1,7 @@
 package wolox.training.models;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +10,8 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 public class Book {
+
+    private static final String CHECK_NOT_NULL_MESSAGE = "Please check the Object supplied to %s, its null!";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -59,7 +63,7 @@ public class Book {
     }
 
     public void setAuthor(String author) {
-        this.author = author;
+        this.author = checkNotNull(author, CHECK_NOT_NULL_MESSAGE, "author");
     }
 
     public String getImage() {
@@ -67,7 +71,7 @@ public class Book {
     }
 
     public void setImage(String image) {
-        this.image = image;
+        this.image = checkNotNull(image, CHECK_NOT_NULL_MESSAGE, "image");
     }
 
     public String getTitle() {
@@ -75,7 +79,7 @@ public class Book {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = checkNotNull(title, CHECK_NOT_NULL_MESSAGE, "title");
     }
 
     public String getSubtitle() {
@@ -83,7 +87,7 @@ public class Book {
     }
 
     public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
+        this.subtitle = checkNotNull(subtitle, CHECK_NOT_NULL_MESSAGE, "subtitle");
     }
 
     public String getPublisher() {
@@ -91,7 +95,7 @@ public class Book {
     }
 
     public void setPublisher(String publisher) {
-        this.publisher = publisher;
+        this.publisher = checkNotNull(publisher, CHECK_NOT_NULL_MESSAGE, "publisher");
     }
 
     public String getYear() {
@@ -99,7 +103,7 @@ public class Book {
     }
 
     public void setYear(String year) {
-        this.year = year;
+        this.year = checkNotNull(year, CHECK_NOT_NULL_MESSAGE, "year");
     }
 
     public int getPages() {
@@ -107,7 +111,7 @@ public class Book {
     }
 
     public void setPages(int pages) {
-        this.pages = pages;
+        this.pages = checkNotNull(pages, CHECK_NOT_NULL_MESSAGE, "pages");
     }
 
     public String getIsbn() {
@@ -115,7 +119,7 @@ public class Book {
     }
 
     public void setIsbn(String isbn) {
-        this.isbn = isbn;
+        this.isbn = checkNotNull(isbn, CHECK_NOT_NULL_MESSAGE, "isbn");
     }
 
     @Override

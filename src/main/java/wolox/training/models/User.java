@@ -1,5 +1,7 @@
 package wolox.training.models;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,9 +18,12 @@ import javax.validation.constraints.NotNull;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotOwnedException;
 
+
 @Entity(name = "users")
 @ApiModel(description = "Users from the Training APP")
 public class User {
+
+    private static final String CHECK_NOT_NULL_MESSAGE = "Please check the Object supplied to %s, its null!";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -51,7 +56,7 @@ public class User {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = checkNotNull(username, CHECK_NOT_NULL_MESSAGE, "username");
     }
 
     public String getName() {
@@ -59,7 +64,7 @@ public class User {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = checkNotNull(name, CHECK_NOT_NULL_MESSAGE, "name");
     }
 
     public LocalDate getBirthdate() {
@@ -67,7 +72,7 @@ public class User {
     }
 
     public void setBirthdate(LocalDate birthdate) {
-        this.birthdate = birthdate;
+        this.birthdate = checkNotNull(birthdate, CHECK_NOT_NULL_MESSAGE, "birthdate");
     }
 
     public List<Book> getBooks() {
@@ -75,7 +80,7 @@ public class User {
     }
 
     public void setBooks(List<Book> books) {
-        this.books = books;
+        this.books = checkNotNull(books, CHECK_NOT_NULL_MESSAGE, "books");
     }
 
     /**
