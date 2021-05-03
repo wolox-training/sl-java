@@ -28,12 +28,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 import wolox.training.test.util.BookTestHelper;
+import wolox.training.utils.MessageError;
+import wolox.training.utils.RouteConstants;
 
 @WebMvcTest(BookController.class)
 @ExtendWith(SpringExtension.class)
 class BookControllerTest {
 
-    public static final String CONTROLLER_URL = "/api/books";
     private static ObjectMapper objectMapper;
     private static List<Book> mockBookList;
     private static Book mockBook;
@@ -57,7 +58,7 @@ class BookControllerTest {
     @Test
     void givenAreBooksRegistered_whenFindAll_thenReturnAListOfBooks() throws Exception {
         Mockito.when(bookRepository.findAll()).thenReturn(mockBookList);
-        mvc.perform(get(CONTROLLER_URL)
+        mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonBookList));
@@ -66,7 +67,7 @@ class BookControllerTest {
     @Test
     void whenFindByIDExists_thenReturnABook() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
-        mvc.perform(get(CONTROLLER_URL + "/1")
+        mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonBook));
@@ -75,16 +76,16 @@ class BookControllerTest {
     @Test
     void whenFindByIDDoesNotExists_thenReturnNotFound() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
-        mvc.perform(get(CONTROLLER_URL + "/1")
+        mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("book does not exits"));
+                .andExpect(content().string(MessageError.BOOK_NOT_FOUND_MSG));
     }
 
     @Test
     void whenCreatedABook_thenReturnTheCreatedBook() throws Exception {
         Mockito.when(bookRepository.save(any(Book.class))).thenReturn(mockBook);
-        mvc.perform(post(CONTROLLER_URL)
+        mvc.perform(post(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
                 .content(jsonBook)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -95,7 +96,7 @@ class BookControllerTest {
     void whenCreatedABookWithNoAuthor_thenReturnBadRequest() throws Exception {
         Map<String, String> map = objectMapper.readValue(jsonBook, Map.class);
         map.remove("author");
-        mvc.perform(post(CONTROLLER_URL)
+        mvc.perform(post(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
                 .content(map.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -106,7 +107,7 @@ class BookControllerTest {
     void whenDeleteABookThatExists_thenReturnNotContent() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
         doNothing().when(bookRepository).deleteById(anyLong());
-        mvc.perform(delete(CONTROLLER_URL + "/1")
+        mvc.perform(delete(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -115,7 +116,7 @@ class BookControllerTest {
     void whenUpdateABookThatExists_thenReturnTheUpdatedBook() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
         Mockito.when(bookRepository.save(any(Book.class))).thenReturn(mockBook);
-        mvc.perform(put(CONTROLLER_URL + "/0")
+        mvc.perform(put(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/0")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBook))
                 .andExpect(status().isOk())
@@ -126,10 +127,10 @@ class BookControllerTest {
     void whenUpdateABookWithIDMissMatch_thenReturnIdMissMatch() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
         Mockito.when(bookRepository.save(any(Book.class))).thenReturn(mockBook);
-        mvc.perform(put(CONTROLLER_URL + "/1")
+        mvc.perform(put(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBook))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string("ID does not match"));
+                .andExpect(content().string(MessageError.BOOK_ID_MISMATCH_MSG));
     }
 }

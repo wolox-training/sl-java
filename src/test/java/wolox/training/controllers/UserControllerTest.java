@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,13 +32,14 @@ import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
 import wolox.training.test.util.BookTestHelper;
 import wolox.training.test.util.UserTestHelper;
+import wolox.training.utils.MessageError;
+import wolox.training.utils.RouteConstants;
 
 
 @WebMvcTest(UserController.class)
 @ExtendWith(SpringExtension.class)
 class UserControllerTest {
 
-    public static final String CONTROLLER_URL = "/api/users";
     private static ObjectMapper objectMapper;
     private static List<User> mockUserList;
     private static User mockUser;
@@ -52,18 +54,23 @@ class UserControllerTest {
 
     @BeforeAll
     static void setUp() throws JsonProcessingException {
-
-        mockUserList = UserTestHelper.aUserList();
         objectMapper = new ObjectMapper();
         mockUser = UserTestHelper.aUser();
+        mockUserList = UserTestHelper.aUserList();
         jsonUser = objectMapper.writeValueAsString(mockUser);
         jsonUserList = objectMapper.writeValueAsString(mockUserList);
+    }
+
+    @AfterEach
+    void setup() {
+        mockUser = UserTestHelper.aUser();
+        mockUserList = UserTestHelper.aUserList();
     }
 
     @Test
     void givenAreUsersRegistered_whenFindAll_thenReturnAListOfUsers() throws Exception {
         Mockito.when(userRepository.findAll()).thenReturn(mockUserList);
-        mvc.perform(get(CONTROLLER_URL)
+        mvc.perform(get(RouteConstants.USERS_CONTROLLER_BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonUserList));
@@ -72,7 +79,7 @@ class UserControllerTest {
     @Test
     void whenFindByIDExists_thenReturnAUser() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
-        mvc.perform(get(CONTROLLER_URL + "/1")
+        mvc.perform(get(RouteConstants.USERS_CONTROLLER_BASE_PATH + "/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonUser));
@@ -81,16 +88,16 @@ class UserControllerTest {
     @Test
     void whenFindByIDDoesNotExists_thenReturnNotFound() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-        mvc.perform(get(CONTROLLER_URL + "/1")
+        mvc.perform(get(RouteConstants.USERS_CONTROLLER_BASE_PATH + "/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("user not found"));
+                .andExpect(content().string(MessageError.USER_NOT_FOUND_MSG));
     }
 
     @Test
     void whenCreatedAUser_thenReturnTheCreatedUser() throws Exception {
         Mockito.when(userRepository.save(any(User.class))).thenReturn(mockUser);
-        mvc.perform(post(CONTROLLER_URL)
+        mvc.perform(post(RouteConstants.USERS_CONTROLLER_BASE_PATH)
                 .content(jsonUser)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -98,10 +105,10 @@ class UserControllerTest {
     }
 
     @Test
-    void whenCreatedAUserWithNoAuthor_thenReturnBadRequest() throws Exception {
+    void whenCreatedAUserWithNoUsername_thenReturnBadRequest() throws Exception {
         Map<String, String> map = objectMapper.readValue(jsonUser, Map.class);
         map.remove("username");
-        mvc.perform(post(CONTROLLER_URL)
+        mvc.perform(post(RouteConstants.USERS_CONTROLLER_BASE_PATH)
                 .content(map.toString())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -112,7 +119,7 @@ class UserControllerTest {
     void whenDeleteAUserThatExists_thenReturnNotContent() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
         doNothing().when(userRepository).deleteById(anyLong());
-        mvc.perform(delete(CONTROLLER_URL + "/1")
+        mvc.perform(delete(RouteConstants.USERS_CONTROLLER_BASE_PATH + "/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -121,7 +128,7 @@ class UserControllerTest {
     void whenUpdateAUserThatExists_thenReturnTheUpdatedUser() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
         Mockito.when(userRepository.save(any(User.class))).thenReturn(mockUser);
-        mvc.perform(put(CONTROLLER_URL + "/0")
+        mvc.perform(put(RouteConstants.USERS_CONTROLLER_BASE_PATH + "/0")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonUser))
                 .andExpect(status().isOk())
@@ -132,11 +139,11 @@ class UserControllerTest {
     void whenUpdateAUserWithIDMissMatch_thenReturnIdMissMatch() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
         Mockito.when(userRepository.save(any(User.class))).thenReturn(mockUser);
-        mvc.perform(put(CONTROLLER_URL + "/1")
+        mvc.perform(put(RouteConstants.USERS_CONTROLLER_BASE_PATH + "/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonUser))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string("ID does not match"));
+                .andExpect(content().string(MessageError.USER_ID_MISMATCH_MSG));
     }
 
     @Test
@@ -148,7 +155,8 @@ class UserControllerTest {
         Mockito.when(userRepository.save(any(User.class))).thenReturn(mockUser);
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(BookTestHelper.aBook()));
 
-        mvc.perform(put(CONTROLLER_URL + "/0/books/0")
+        mvc.perform(put
+                (RouteConstants.USERS_CONTROLLER_BASE_PATH + "/0" + RouteConstants.USER_BOOKS_PATH + "/0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonUserWithABook));
@@ -162,10 +170,11 @@ class UserControllerTest {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUserWithABook));
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
 
-        mvc.perform(put(CONTROLLER_URL + "/0/books/0")
+        mvc.perform(put
+                (RouteConstants.USERS_CONTROLLER_BASE_PATH + "/0" + RouteConstants.USER_BOOKS_PATH + "/0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string("The book are already owned by the user"))
+                .andExpect(content().string(MessageError.BOOK_ALREADY_OWNED_MSG))
         ;
     }
 
@@ -178,7 +187,8 @@ class UserControllerTest {
         Mockito.when(userRepository.save(any(User.class))).thenReturn(mockUser);
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
 
-        mvc.perform(delete(CONTROLLER_URL + "/0/books/0")
+        mvc.perform(delete(
+                RouteConstants.USERS_CONTROLLER_BASE_PATH + "/0" + RouteConstants.USER_BOOKS_PATH + "/0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonUser));
@@ -192,9 +202,10 @@ class UserControllerTest {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUserWithABook));
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(BookTestHelper.aBook()));
 
-        mvc.perform(delete(CONTROLLER_URL + "/0/books/0")
+        mvc.perform(delete(
+                RouteConstants.USERS_CONTROLLER_BASE_PATH + "/0" + RouteConstants.USER_BOOKS_PATH + "/0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("user does not own the book"));
+                .andExpect(content().string(MessageError.BOOK_NOT_OWNED_MSG));
     }
 }
