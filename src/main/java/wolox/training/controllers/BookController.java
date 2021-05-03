@@ -24,6 +24,8 @@ public class BookController {
 
     public static final String BOOK_CONTROLLER_BASE_PATH = "/api/books";
     public static final String PATH_VARIABLE_BOOK_ID = "/{id}";
+    public static final String BOOK_ID_MISMATCH_MSG = "book ID does not match";
+    public static final String BOOK_NOT_FOUND_MSG = "book not found";
     @Autowired
     BookRepository bookRepository;
 
@@ -45,7 +47,8 @@ public class BookController {
      */
     @GetMapping(PATH_VARIABLE_BOOK_ID)
     public Book findOne(@PathVariable Long id) {
-        return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
+        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(BOOK_NOT_FOUND_MSG));
+
     }
 
     /**
@@ -83,7 +86,7 @@ public class BookController {
     @PutMapping(PATH_VARIABLE_BOOK_ID)
     public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
         if (book.getId() != id) {
-            throw new BookIdMismatchException();
+            throw new BookIdMismatchException(BOOK_ID_MISMATCH_MSG);
         }
         findOne(id);
         return bookRepository.save(book);
