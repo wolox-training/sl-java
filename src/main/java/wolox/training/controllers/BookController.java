@@ -23,7 +23,6 @@ import wolox.training.utils.RouteConstants;
 
 @RestController
 @RequestMapping(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
-@Api
 public class BookController {
 
     @Autowired
