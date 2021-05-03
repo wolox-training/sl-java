@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.exceptions.IdMismatchException;
-import wolox.training.exceptions.UserNotFoundException;
+import wolox.training.exceptions.NotFoundException;
 import wolox.training.models.User;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
+import wolox.training.utils.MessageError;
+import wolox.training.utils.RouteConstants;
 
 @RestController
-@RequestMapping("/api/users")
-@Api
+@RequestMapping(RouteConstants.USERS_CONTROLLER_BASE_PATH)
 public class UserController {
 
     @Autowired
@@ -51,7 +51,7 @@ public class UserController {
      *
      * @return the user corresponding to the requested id
      */
-    @GetMapping("/{id}")
+    @GetMapping(RouteConstants.PATH_VARIABLE_USER_ID)
     @ApiOperation(value = "Find a user by its id", response = User.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved user"),
@@ -61,7 +61,7 @@ public class UserController {
     public User findOne(
             @ApiParam(value = "id to find the user", example = "1", required = true)
             @PathVariable long id) {
-        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException(MessageError.USER_NOT_FOUND_MSG));
     }
 
     /**
@@ -82,7 +82,7 @@ public class UserController {
      *
      * @param id: User identifier (Long)
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping(RouteConstants.PATH_VARIABLE_USER_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable long id) {
         findOne(id);
@@ -97,10 +97,10 @@ public class UserController {
      *
      * @return User uptaded
      */
-    @PutMapping("/{id}")
+    @PutMapping(RouteConstants.PATH_VARIABLE_USER_ID)
     public User update(@PathVariable long id, @RequestBody User user) {
         if (user.getId() != id) {
-            throw new IdMismatchException();
+            throw new IdMismatchException(MessageError.USER_ID_MISMATCH_MSG);
         }
         findOne(id);
         return userRepository.save(user);
@@ -114,11 +114,12 @@ public class UserController {
      *
      * @return User with associated book
      */
-
-    @PutMapping("/{id}/books/{bookId}")
+    @PutMapping(RouteConstants.PATH_VARIABLE_USER_ID +
+            RouteConstants.USER_BOOKS_PATH + RouteConstants.PATH_VARIABLE_USER_BOOK_ID)
     public User addBook(@PathVariable long id, @PathVariable long bookId) {
         User user = findOne(id);
-        user.addBook(bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new));
+        user.addBook(bookRepository.findById(bookId).orElseThrow(
+                () -> new NotFoundException(MessageError.BOOK_NOT_FOUND_MSG)));
         return userRepository.save(user);
     }
 
@@ -130,11 +131,12 @@ public class UserController {
      *
      * @return User without associated book
      */
-    @DeleteMapping("/{id}/books/{bookId}")
+    @DeleteMapping(RouteConstants.PATH_VARIABLE_USER_ID +
+            RouteConstants.USER_BOOKS_PATH + RouteConstants.PATH_VARIABLE_USER_BOOK_ID)
     public User removeBook(@PathVariable long id, @PathVariable long bookId) {
         User user = findOne(id);
-        user.removeBook(bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new));
+        user.removeBook(bookRepository.findById(bookId).orElseThrow(
+                () -> new NotFoundException(MessageError.BOOK_NOT_FOUND_MSG)));
         return userRepository.save(user);
     }
-
 }

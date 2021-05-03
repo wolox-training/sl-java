@@ -14,14 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.exceptions.IdMismatchException;
+import wolox.training.exceptions.NotFoundException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
+import wolox.training.utils.MessageError;
+import wolox.training.utils.RouteConstants;
 
 @RestController
-@RequestMapping("/api/books")
-@Api
+@RequestMapping(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
 public class BookController {
 
     @Autowired
@@ -44,15 +45,19 @@ public class BookController {
      *
      * @return the book corresponding to the requested id
      */
-    @GetMapping("/{id}")
+    @GetMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     public Book findOne(@PathVariable Long id) {
-        return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
+        return bookRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(MessageError.BOOK_NOT_FOUND_MSG));
+
     }
 
     /**
      * Create a book record
      *
      * @param book: Book to be created (Book)
+     *
+     * @return Book created
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -65,7 +70,8 @@ public class BookController {
      *
      * @param id: Book identifier (Long)
      */
-    @DeleteMapping("/{id}")
+
+    @DeleteMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         findOne(id);
@@ -77,12 +83,14 @@ public class BookController {
      *
      * @param book: Book to be updated (Book) RequestBody
      * @param id:   Book identifier (Long) PathVariable
+     *
+     * @return Book updated
      */
 
-    @PutMapping("/{id}")
+    @PutMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
         if (book.getId() != id) {
-            throw new IdMismatchException();
+            throw new IdMismatchException(MessageError.BOOK_ID_MISMATCH_MSG);
         }
         findOne(id);
         return bookRepository.save(book);
@@ -102,5 +110,4 @@ public class BookController {
         model.addAttribute("name", name);
         return "greeting";
     }
-
 }
