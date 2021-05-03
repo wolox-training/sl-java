@@ -19,36 +19,39 @@ import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 
 @RestController
-@RequestMapping("/api/books")
+@RequestMapping(BookController.BOOK_CONTROLLER_BASE_PATH)
 public class BookController {
+
+    public static final String BOOK_CONTROLLER_BASE_PATH = "/api/books";
+    public static final String PATH_VARIABLE_BOOK_ID = "/{id}";
     @Autowired
     BookRepository bookRepository;
 
     @GetMapping
-    public Iterable findAll(){
+    public Iterable findAll() {
         return bookRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public Book findOne(@PathVariable Long id){
+    @GetMapping(PATH_VARIABLE_BOOK_ID)
+    public Book findOne(@PathVariable Long id) {
         return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Book create(@RequestBody Book book){
+    public Book create(@RequestBody Book book) {
         return bookRepository.save(book);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(PATH_VARIABLE_BOOK_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete (@PathVariable Long id){
+    public void delete(@PathVariable Long id) {
         findOne(id);
         bookRepository.deleteById(id);
     }
 
-    @PutMapping("/{id}")
-    public Book updateBook(@RequestBody Book book, @PathVariable Long id){
+    @PutMapping(PATH_VARIABLE_BOOK_ID)
+    public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
         if (book.getId() != id) {
             throw new BookIdMismatchException();
         }
@@ -57,10 +60,9 @@ public class BookController {
     }
 
     @GetMapping("/greeting")
-    public String greeting(@RequestParam(name="name", required = false,
-            defaultValue = "World") String name, Model model){
+    public String greeting(@RequestParam(name = "name", required = false,
+            defaultValue = "World") String name, Model model) {
         model.addAttribute("name", name);
         return "greeting";
     }
-
 }
