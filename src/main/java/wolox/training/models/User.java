@@ -18,7 +18,7 @@ import wolox.training.utils.MessageError;
 
 @Entity(name = EntityConstants.USERS_ENTITY_NAME)
 public class User {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
