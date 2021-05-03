@@ -18,10 +18,7 @@ import wolox.training.utils.MessageError;
 
 @Entity(name = EntityConstants.USERS_ENTITY_NAME)
 public class User {
-
-    public static final String BOOK_ALREADY_OWNED_BY_MSG = "The book are already owned by the user";
-    public static final String BOOK_NOT_OWNED_MSG = "user does not own the book";
-    public static final String USERS_ENTITY_NAME = "users";
+    
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
