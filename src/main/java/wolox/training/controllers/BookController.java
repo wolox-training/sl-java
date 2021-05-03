@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import wolox.training.exceptions.BookIdMismatchException;
-import wolox.training.exceptions.BookNotFoundException;
+import wolox.training.exceptions.IdMismatchException;
+import wolox.training.exceptions.NotFoundException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 import wolox.training.utils.MessageError;
@@ -47,7 +47,7 @@ public class BookController {
     @GetMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     public Book findOne(@PathVariable Long id) {
         return bookRepository.findById(id).orElseThrow(
-                () -> new BookNotFoundException(MessageError.BOOK_NOT_FOUND_MSG));
+                () -> new NotFoundException(MessageError.BOOK_NOT_FOUND_MSG));
 
     }
 
@@ -89,7 +89,7 @@ public class BookController {
     @PutMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
         if (book.getId() != id) {
-            throw new BookIdMismatchException(MessageError.BOOK_ID_MISMATCH_MSG);
+            throw new IdMismatchException(MessageError.BOOK_ID_MISMATCH_MSG);
         }
         findOne(id);
         return bookRepository.save(book);
