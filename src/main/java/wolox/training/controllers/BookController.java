@@ -33,8 +33,8 @@ public class BookController {
     }
 
     @GetMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
-    public Book findOne(@PathVariable Long bookId) {
-        return bookRepository.findById(bookId).orElseThrow(
+    public Book findOne(@PathVariable Long id) {
+        return bookRepository.findById(id).orElseThrow(
                 () -> new BookNotFoundException(MessageError.BOOK_NOT_FOUND_MSG));
 
     }
@@ -47,17 +47,17 @@ public class BookController {
 
     @DeleteMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long bookId) {
-        findOne(bookId);
-        bookRepository.deleteById(bookId);
+    public void delete(@PathVariable Long id) {
+        findOne(id);
+        bookRepository.deleteById(id);
     }
 
     @PutMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
-    public Book updateBook(@RequestBody Book book, @PathVariable Long bookId) {
-        if (book.getId() != bookId) {
+    public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
+        if (book.getId() != id) {
             throw new BookIdMismatchException(MessageError.BOOK_ID_MISMATCH_MSG);
         }
-        findOne(bookId);
+        findOne(id);
         return bookRepository.save(book);
     }
 
