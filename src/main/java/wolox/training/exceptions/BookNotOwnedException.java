@@ -1,8 +1,8 @@
 package wolox.training.exceptions;
 
-public class BookNotOwnedException extends RuntimeException{
+public class BookNotOwnedException extends RuntimeException {
 
-    public BookNotOwnedException() {
-        super("user does not own the book");
+    public BookNotOwnedException(String msg) {
+        super(msg);
     }
 }
