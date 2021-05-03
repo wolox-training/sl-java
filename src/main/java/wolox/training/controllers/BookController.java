@@ -45,8 +45,8 @@ public class BookController {
      * @return the book corresponding to the requested id
      */
     @GetMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
-    public Book findOne(@PathVariable Long bookId) {
-        return bookRepository.findById(bookId).orElseThrow(
+    public Book findOne(@PathVariable Long id) {
+        return bookRepository.findById(id).orElseThrow(
                 () -> new BookNotFoundException(MessageError.BOOK_NOT_FOUND_MSG));
 
     }
@@ -87,8 +87,8 @@ public class BookController {
      */
 
     @PutMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
-    public Book updateBook(@RequestBody Book book, @PathVariable Long bookId) {
-        if (book.getId() != bookId) {
+    public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
+        if (book.getId() != id) {
             throw new BookIdMismatchException(MessageError.BOOK_ID_MISMATCH_MSG);
         }
         findOne(bookId);
