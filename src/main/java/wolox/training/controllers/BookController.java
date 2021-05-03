@@ -43,6 +43,7 @@ public class BookController {
      * Find a book by its id
      *
      * @param id: Book identifier (Long)
+     *
      * @return the book corresponding to the requested id
      */
     @GetMapping(PATH_VARIABLE_BOOK_ID)
@@ -55,7 +56,8 @@ public class BookController {
      * Create a book record
      *
      * @param book: Book to be created (Book)
-     * @return
+     *
+     * @return Book created
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -68,6 +70,7 @@ public class BookController {
      *
      * @param id: Book identifier (Long)
      */
+
     @DeleteMapping(PATH_VARIABLE_BOOK_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
@@ -79,8 +82,9 @@ public class BookController {
      * Update a book by its ID
      *
      * @param book: Book to be updated (Book) RequestBody
-     * @param id: Book identifier (Long) PathVariable
-     * @return
+     * @param id:   Book identifier (Long) PathVariable
+     *
+     * @return Book updated
      */
 
     @PutMapping(PATH_VARIABLE_BOOK_ID)
@@ -95,8 +99,9 @@ public class BookController {
     /**
      * Greetings! with a name
      *
-     * @param name: Optional name of who is going to greet (String)
+     * @param name:  Optional name of who is going to greet (String)
      * @param model: Contains the data that appears in the view (Model)
+     *
      * @return The name of the view to perform the greeting
      */
     @GetMapping("/greeting")
