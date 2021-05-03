@@ -17,15 +17,13 @@ import wolox.training.exceptions.BookIdMismatchException;
 import wolox.training.exceptions.BookNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
+import wolox.training.utils.MessageError;
+import wolox.training.utils.RouteConstants;
 
 @RestController
-@RequestMapping(BookController.BOOK_CONTROLLER_BASE_PATH)
+@RequestMapping(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
 public class BookController {
 
-    public static final String BOOK_CONTROLLER_BASE_PATH = "/api/books";
-    public static final String PATH_VARIABLE_BOOK_ID = "/{id}";
-    public static final String BOOK_ID_MISMATCH_MSG = "book ID does not match";
-    public static final String BOOK_NOT_FOUND_MSG = "book not found";
     @Autowired
     BookRepository bookRepository;
 
@@ -46,9 +44,10 @@ public class BookController {
      *
      * @return the book corresponding to the requested id
      */
-    @GetMapping(PATH_VARIABLE_BOOK_ID)
-    public Book findOne(@PathVariable Long id) {
-        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(BOOK_NOT_FOUND_MSG));
+    @GetMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
+    public Book findOne(@PathVariable Long bookId) {
+        return bookRepository.findById(bookId).orElseThrow(
+                () -> new BookNotFoundException(MessageError.BOOK_NOT_FOUND_MSG));
 
     }
 
@@ -71,11 +70,11 @@ public class BookController {
      * @param id: Book identifier (Long)
      */
 
-    @DeleteMapping(PATH_VARIABLE_BOOK_ID)
+    @DeleteMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        findOne(id);
-        bookRepository.deleteById(id);
+    public void delete(@PathVariable Long bookId) {
+        findOne(bookId);
+        bookRepository.deleteById(bookId);
     }
 
     /**
@@ -87,12 +86,12 @@ public class BookController {
      * @return Book updated
      */
 
-    @PutMapping(PATH_VARIABLE_BOOK_ID)
-    public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
-        if (book.getId() != id) {
-            throw new BookIdMismatchException(BOOK_ID_MISMATCH_MSG);
+    @PutMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
+    public Book updateBook(@RequestBody Book book, @PathVariable Long bookId) {
+        if (book.getId() != bookId) {
+            throw new BookIdMismatchException(MessageError.BOOK_ID_MISMATCH_MSG);
         }
-        findOne(id);
+        findOne(bookId);
         return bookRepository.save(book);
     }
 
