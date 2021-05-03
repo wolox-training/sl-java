@@ -72,9 +72,9 @@ public class BookController {
 
     @DeleteMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long bookId) {
-        findOne(bookId);
-        bookRepository.deleteById(bookId);
+    public void delete(@PathVariable Long id) {
+        findOne(id);
+        bookRepository.deleteById(id);
     }
 
     /**
@@ -91,7 +91,7 @@ public class BookController {
         if (book.getId() != id) {
             throw new BookIdMismatchException(MessageError.BOOK_ID_MISMATCH_MSG);
         }
-        findOne(bookId);
+        findOne(id);
         return bookRepository.save(book);
     }
 
