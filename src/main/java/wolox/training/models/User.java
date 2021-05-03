@@ -15,11 +15,16 @@ import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotOwnedException;
+import wolox.training.utils.EntityConstants;
+import wolox.training.utils.MessageError;
 
-@Entity(name = "users")
+@Entity(name = EntityConstants.USERS_ENTITY_NAME)
 @ApiModel(description = "Users from the Training APP")
 public class User {
 
+    public static final String BOOK_ALREADY_OWNED_BY_MSG = "The book are already owned by the user";
+    public static final String BOOK_NOT_OWNED_MSG = "user does not own the book";
+    public static final String USERS_ENTITY_NAME = "users";
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
@@ -85,7 +90,7 @@ public class User {
      */
     public void addBook(Book book) {
         if (books.contains(book)) {
-            throw new BookAlreadyOwnedException();
+            throw new BookAlreadyOwnedException(MessageError.BOOK_ALREADY_OWNED_MSG);
         }
         books.add(book);
     }
@@ -98,7 +103,7 @@ public class User {
 
     public void removeBook(Book book) {
         if (!books.remove(book)) {
-            throw new BookNotOwnedException();
+            throw new BookNotOwnedException(MessageError.BOOK_NOT_OWNED_MSG);
         }
     }
 
