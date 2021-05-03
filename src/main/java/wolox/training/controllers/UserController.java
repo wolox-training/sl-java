@@ -59,7 +59,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
 
-    public User findOne(@PathVariable long id) {
+    public User findOne(
             @ApiParam(value = "id to find the user", example = "1", required = true)
             @PathVariable long id) {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException(MessageError.USER_NOT_FOUND_MSG));
