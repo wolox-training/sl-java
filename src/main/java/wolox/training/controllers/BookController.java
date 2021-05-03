@@ -24,6 +24,8 @@ public class BookController {
 
     public static final String BOOK_CONTROLLER_BASE_PATH = "/api/books";
     public static final String PATH_VARIABLE_BOOK_ID = "/{id}";
+    public static final String BOOK_ID_MISMATCH_MSG = "book ID does not match";
+    public static final String BOOK_NOT_FOUND_MSG = "book not found";
     @Autowired
     BookRepository bookRepository;
 
@@ -41,18 +43,21 @@ public class BookController {
      * Find a book by its id
      *
      * @param id: Book identifier (Long)
+     *
      * @return the book corresponding to the requested id
      */
     @GetMapping(PATH_VARIABLE_BOOK_ID)
     public Book findOne(@PathVariable Long id) {
-        return bookRepository.findById(id).orElseThrow(BookNotFoundException::new);
+        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(BOOK_NOT_FOUND_MSG));
+
     }
 
     /**
      * Create a book record
      *
      * @param book: Book to be created (Book)
-     * @return
+     *
+     * @return Book created
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -65,6 +70,7 @@ public class BookController {
      *
      * @param id: Book identifier (Long)
      */
+
     @DeleteMapping(PATH_VARIABLE_BOOK_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
@@ -76,14 +82,15 @@ public class BookController {
      * Update a book by its ID
      *
      * @param book: Book to be updated (Book) RequestBody
-     * @param id: Book identifier (Long) PathVariable
-     * @return
+     * @param id:   Book identifier (Long) PathVariable
+     *
+     * @return Book updated
      */
 
     @PutMapping(PATH_VARIABLE_BOOK_ID)
     public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
         if (book.getId() != id) {
-            throw new BookIdMismatchException();
+            throw new BookIdMismatchException(BOOK_ID_MISMATCH_MSG);
         }
         findOne(id);
         return bookRepository.save(book);
@@ -92,8 +99,9 @@ public class BookController {
     /**
      * Greetings! with a name
      *
-     * @param name: Optional name of who is going to greet (String)
+     * @param name:  Optional name of who is going to greet (String)
      * @param model: Contains the data that appears in the view (Model)
+     *
      * @return The name of the view to perform the greeting
      */
     @GetMapping("/greeting")
