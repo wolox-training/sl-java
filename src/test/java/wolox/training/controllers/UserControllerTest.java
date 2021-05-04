@@ -195,7 +195,7 @@ class UserControllerTest {
     }
 
     @Test
-    void WhenRemoveBookToUserDidNotHave_thenReturnUserWithoutTheBook() throws Exception {
+    void WhenRemoveBookToUserDidNotHave_thenReturnUserNotOwnTheBook() throws Exception {
         User mockUserWithABook = UserTestHelper.aUser();
         Book book = BookTestHelper.aBook();
         mockUserWithABook.addBook(book);
