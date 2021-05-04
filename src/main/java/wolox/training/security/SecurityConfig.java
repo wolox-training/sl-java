@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         HttpMethod.POST,
                         RouteConstants.BOOK_CONTROLLER_BASE_PATH,
-                        RouteConstants.USER_PASSWORD_PATH).permitAll()
+                        RouteConstants.USERS_CONTROLLER_BASE_PATH).permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().csrf().disable();
