@@ -50,6 +50,8 @@ public class User {
     @ManyToMany
     private List<Book> books = new ArrayList<>();
 
+    private String password;
+
     public User() {
     }
 
@@ -87,6 +89,14 @@ public class User {
 
     public void setBooks(List<Book> books) {
         this.books = checkNotNull(books, CHECK_NOT_NULL_MESSAGE);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**

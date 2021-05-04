@@ -1,6 +1,5 @@
 package wolox.training.controllers;
 
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
@@ -45,6 +44,7 @@ public class BookController {
      *
      * @return the book corresponding to the requested id
      */
+
     @GetMapping(RouteConstants.PATH_VARIABLE_BOOK_ID)
     public Book findOne(@PathVariable Long id) {
         return bookRepository.findById(id).orElseThrow(

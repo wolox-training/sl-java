@@ -7,8 +7,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wolox.training.exceptions.IdMismatchException;
 import wolox.training.exceptions.NotFoundException;
 import wolox.training.models.User;
+import wolox.training.models.dto.PasswordDto;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
 import wolox.training.utils.MessageError;
@@ -26,6 +29,7 @@ import wolox.training.utils.RouteConstants;
 
 @RestController
 @RequestMapping(RouteConstants.USERS_CONTROLLER_BASE_PATH)
+@Api
 public class UserController {
 
     @Autowired
@@ -33,6 +37,9 @@ public class UserController {
 
     @Autowired
     BookRepository bookRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Get all the users registered
@@ -74,6 +81,7 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User create(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -102,7 +110,8 @@ public class UserController {
         if (user.getId() != id) {
             throw new IdMismatchException(MessageError.USER_ID_MISMATCH_MSG);
         }
-        findOne(id);
+        User userBD = findOne(id);
+        user.setPassword(userBD.getPassword());
         return userRepository.save(user);
     }
 
@@ -137,6 +146,19 @@ public class UserController {
         User user = findOne(id);
         user.removeBook(bookRepository.findById(bookId).orElseThrow(
                 () -> new NotFoundException(MessageError.BOOK_NOT_FOUND_MSG)));
+        return userRepository.save(user);
+    }
+
+    /**
+     * @param id:          User identifier (Long)
+     * @param newPassword: new password to assign (String)
+     *
+     * @return User uptaded
+     */
+    @PatchMapping(RouteConstants.PATH_VARIABLE_USER_ID + RouteConstants.USER_PASSWORD_PATH)
+    public User changePassword(@PathVariable long id, @RequestBody PasswordDto newPassword) {
+        User user = findOne(id);
+        user.setPassword(passwordEncoder.encode(newPassword.getPassword()));
         return userRepository.save(user);
     }
 }

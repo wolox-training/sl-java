@@ -3,15 +3,20 @@ package wolox.training.test.util;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import wolox.training.models.User;
 
+
 public class UserTestHelper {
+
+    private static PasswordEncoder passwordEncoder;
 
     public static User aUser() {
         User user1 = new User();
         user1.setUsername("stelome");
         user1.setName("andrew");
         user1.setBirthdate(LocalDate.of(1997, 5, 23));
+        user1.setPassword("12345678");
         return user1;
     }
 

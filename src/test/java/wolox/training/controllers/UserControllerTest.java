@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -21,13 +22,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.models.Book;
 import wolox.training.models.User;
+import wolox.training.models.dto.PasswordDto;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
 import wolox.training.test.util.BookTestHelper;
@@ -36,7 +41,8 @@ import wolox.training.utils.MessageError;
 import wolox.training.utils.RouteConstants;
 
 
-@WebMvcTest(UserController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 class UserControllerTest {
 
@@ -49,6 +55,8 @@ class UserControllerTest {
     UserRepository userRepository;
     @MockBean
     BookRepository bookRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
     @Autowired
     private MockMvc mvc;
 
@@ -67,6 +75,7 @@ class UserControllerTest {
         mockUserList = UserTestHelper.aUserList();
     }
 
+    @WithMockUser
     @Test
     void givenAreUsersRegistered_whenFindAll_thenReturnAListOfUsers() throws Exception {
         Mockito.when(userRepository.findAll()).thenReturn(mockUserList);
@@ -76,6 +85,7 @@ class UserControllerTest {
                 .andExpect(content().json(jsonUserList));
     }
 
+    @WithMockUser
     @Test
     void whenFindByIDExists_thenReturnAUser() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
@@ -85,6 +95,7 @@ class UserControllerTest {
                 .andExpect(content().json(jsonUser));
     }
 
+    @WithMockUser
     @Test
     void whenFindByIDDoesNotExists_thenReturnNotFound() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -115,6 +126,7 @@ class UserControllerTest {
 
     }
 
+    @WithMockUser
     @Test
     void whenDeleteAUserThatExists_thenReturnNotContent() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
@@ -124,6 +136,7 @@ class UserControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser
     @Test
     void whenUpdateAUserThatExists_thenReturnTheUpdatedUser() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
@@ -135,6 +148,7 @@ class UserControllerTest {
                 .andExpect(content().json(jsonUser));
     }
 
+    @WithMockUser
     @Test
     void whenUpdateAUserWithIDMissMatch_thenReturnIdMissMatch() throws Exception {
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
@@ -146,6 +160,7 @@ class UserControllerTest {
                 .andExpect(content().string(MessageError.USER_ID_MISMATCH_MSG));
     }
 
+    @WithMockUser
     @Test
     void whenAddBookToUser_thenReturnUserWithTheBookAdded() throws Exception {
         User mockUserWithABook = UserTestHelper.aUser();
@@ -162,6 +177,7 @@ class UserControllerTest {
                 .andExpect(content().json(jsonUserWithABook));
     }
 
+    @WithMockUser
     @Test
     void whenAddBookToUserThatAlreadyHad_thenReturnBookAlreadyOwned() throws Exception {
         User mockUserWithABook = UserTestHelper.aUser();
@@ -174,12 +190,12 @@ class UserControllerTest {
                 (RouteConstants.USERS_CONTROLLER_BASE_PATH + "/0" + RouteConstants.USER_BOOKS_PATH + "/0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string(MessageError.BOOK_ALREADY_OWNED_MSG))
-        ;
+                .andExpect(content().string(MessageError.BOOK_ALREADY_OWNED_MSG));
     }
 
+    @WithMockUser
     @Test
-    void WhenRemoveBookToUser_thenReturnUserWithoutTheBook() throws Exception {
+    void WhenRemoveBookToUser_thenReturnUserWithTheBook() throws Exception {
         User mockUserWithABook = UserTestHelper.aUser();
         Book book = BookTestHelper.aBook();
         mockUserWithABook.addBook(book);
@@ -194,6 +210,7 @@ class UserControllerTest {
                 .andExpect(content().json(jsonUser));
     }
 
+    @WithMockUser
     @Test
     void WhenRemoveBookToUserDidNotHave_thenReturnUserNotOwnTheBook() throws Exception {
         User mockUserWithABook = UserTestHelper.aUser();
@@ -207,5 +224,30 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(MessageError.BOOK_NOT_OWNED_MSG));
+    }
+
+    @Test
+    void givenAUserIsNotAuthenticated_WhenRemoveBookToUser_thenReturnUnauthorized() throws Exception {
+        mvc.perform(delete(
+                RouteConstants.USERS_CONTROLLER_BASE_PATH + "/0" + RouteConstants.USER_BOOKS_PATH + "/0")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @WithMockUser
+    @Test
+    void whenChangeAUserPassword_thenReturnTheUpdatedUserWithNewPassword() throws Exception {
+        PasswordDto newPassword = new PasswordDto();
+        newPassword.setPassword("1234567890");
+        String jsonPassword = objectMapper.writeValueAsString(newPassword);
+
+        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUser));
+        Mockito.when(userRepository.save(any(User.class))).thenReturn(mockUser);
+
+        mvc.perform(patch(RouteConstants.USERS_CONTROLLER_BASE_PATH + "/0" +
+                RouteConstants.USER_PASSWORD_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonPassword))
+                .andExpect(status().isOk());
     }
 }
