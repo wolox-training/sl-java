@@ -1,7 +1,13 @@
 package wolox.training.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,16 +22,22 @@ import org.springframework.web.bind.annotation.RestController;
 import wolox.training.exceptions.IdMismatchException;
 import wolox.training.exceptions.NotFoundException;
 import wolox.training.models.Book;
+import wolox.training.models.mappers.BookMapper;
 import wolox.training.repositories.BookRepository;
+import wolox.training.service.OpenLibraryService;
 import wolox.training.utils.MessageError;
 import wolox.training.utils.RouteConstants;
 
 @RestController
 @RequestMapping(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
+@Api
 public class BookController {
 
     @Autowired
     BookRepository bookRepository;
+
+    @Autowired
+    OpenLibraryService openLibraryService;
 
     /**
      * Get all the books registered
@@ -50,6 +62,22 @@ public class BookController {
         return bookRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(MessageError.BOOK_NOT_FOUND_MSG));
 
+    }
+
+    @GetMapping(RouteConstants.BOOKS_ISBN_PATH)
+    @ApiOperation(value = "Find a book by its ISBN code", response = Book.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved book"),
+            @ApiResponse(code = 201, message = "Successfully created book"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    public ResponseEntity<Object> findByISBN(@PathVariable String isbn) {
+        Optional<Book> bookOptional = bookRepository.findFirstByIsbn(isbn);
+        if (bookOptional.isPresent()) {
+            return ResponseEntity.ok(bookOptional.get());
+        } else {
+            Book book = BookMapper.bookInfoToBook(openLibraryService.bookInfo(isbn), isbn);
+            return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
+        }
     }
 
     /**
