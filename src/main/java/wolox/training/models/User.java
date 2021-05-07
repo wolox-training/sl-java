@@ -1,5 +1,6 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +30,7 @@ public class User {
     private String name;
 
     @NotNull
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthdate;
 
     @NotNull
