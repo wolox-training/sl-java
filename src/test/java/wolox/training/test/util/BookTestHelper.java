@@ -7,17 +7,17 @@ import wolox.training.models.Book;
 public class BookTestHelper {
 
     public static Book aBook() {
-        Book book1 = new Book();
-        book1.setGenre("Fiction");
-        book1.setAuthor("Gabriel García Márquez");
-        book1.setImage("image.jpg");
-        book1.setTitle("El amor en los tiempos del colera");
-        book1.setSubtitle("-");
-        book1.setPublisher("Vintage");
-        book1.setYear("1997");
-        book1.setPages(464);
-        book1.setIsbn("9781400034673");
-        return book1;
+        Book book = new Book();
+        book.setGenre("Fiction");
+        book.setAuthor("Gabriel García Márquez");
+        book.setImage("image.jpg");
+        book.setTitle("El amor en los tiempos del colera");
+        book.setSubtitle("-");
+        book.setPublisher("Vintage");
+        book.setYear("1997");
+        book.setPages(464);
+        book.setIsbn("9781400034673");
+        return book;
     }
 
     public static List<Book> aBookList() {

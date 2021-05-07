@@ -98,7 +98,6 @@ public class User {
 
     public void setBooks(List<Book> books) {
         checkNotNull(books, CHECK_NOT_NULL_MESSAGE);
-        checkArgument(!ObjectUtils.isEmpty(books), CHECK_ARGUMENT_EMPTY_MESSAGE);
         this.books = books;
     }
 
