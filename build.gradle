@@ -24,6 +24,7 @@ dependencies {
     compile('org.springframework.plugin:spring-plugin-core:1.2.0.RELEASE')
     compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompile('com.h2database:h2')
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 }
 
