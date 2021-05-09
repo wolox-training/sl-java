@@ -12,6 +12,7 @@ public final class RouteConstants {
     public static final String PATH_VARIABLE_USER_BOOK_ID = "/{bookId}";
     public static final String USER_PASSWORD_PATH = "/password";
     public static final String CLASSPATH_OPENLIBERTYSERVICE_PROPERTIES = "classpath:openlibertyservice.properties";
+    public static final String USER_USERNAME_PATH = "/username";
 
     private RouteConstants() {
     }
