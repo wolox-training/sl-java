@@ -1,6 +1,8 @@
 package wolox.training.models;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static wolox.training.utils.MessageError.CHECK_ARGUMENT_EMPTY_MESSAGE;
 import static wolox.training.utils.MessageError.CHECK_NOT_NULL_MESSAGE;
 
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+import org.springframework.util.ObjectUtils;
 
 @Entity
 public class Book {
@@ -62,7 +65,9 @@ public class Book {
     }
 
     public void setAuthor(String author) {
-        this.author = checkNotNull(author, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(author, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(author), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.author = author;
     }
 
     public String getImage() {
@@ -70,7 +75,9 @@ public class Book {
     }
 
     public void setImage(String image) {
-        this.image = checkNotNull(image, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(image, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(image), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.image = image;
     }
 
     public String getTitle() {
@@ -78,7 +85,9 @@ public class Book {
     }
 
     public void setTitle(String title) {
-        this.title = checkNotNull(title, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(title, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(title), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.title = title;
     }
 
     public String getSubtitle() {
@@ -86,7 +95,9 @@ public class Book {
     }
 
     public void setSubtitle(String subtitle) {
-        this.subtitle = checkNotNull(subtitle, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(subtitle, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(subtitle), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.subtitle = subtitle;
     }
 
     public String getPublisher() {
@@ -94,7 +105,9 @@ public class Book {
     }
 
     public void setPublisher(String publisher) {
-        this.publisher = checkNotNull(publisher, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(publisher, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(publisher), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.publisher = publisher;
     }
 
     public String getYear() {
@@ -102,7 +115,9 @@ public class Book {
     }
 
     public void setYear(String year) {
-        this.year = checkNotNull(year, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(year, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(year), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.year = year;
     }
 
     public int getPages() {
@@ -118,7 +133,9 @@ public class Book {
     }
 
     public void setIsbn(String isbn) {
-        this.isbn = checkNotNull(isbn, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(isbn, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(isbn), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.isbn = isbn;
     }
 
     @Override

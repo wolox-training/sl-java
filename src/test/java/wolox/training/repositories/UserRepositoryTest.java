@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import wolox.training.models.User;
+import wolox.training.test.TestConstants;
 import wolox.training.test.util.UserTestHelper;
 
 @DataJpaTest
@@ -28,7 +29,7 @@ class UserRepositoryTest {
         userRepository.save(UserTestHelper.aUserList().get(0));
         userRepository.save(UserTestHelper.aUserList().get(1));
         userRepository.save(UserTestHelper.aUserList().get(2));
-        User user = userRepository.findFirstByUsername("stelome").orElseThrow(
+        User user = userRepository.findFirstByUsername(TestConstants.USER_MOCK_USERNAME_NAME).orElseThrow(
                 null);
         assertNotNull(user);
     }
