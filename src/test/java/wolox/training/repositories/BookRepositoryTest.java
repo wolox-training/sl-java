@@ -43,4 +43,14 @@ class BookRepositoryTest {
                         (bookToFind.getPublisher(), bookToFind.getGenre(), bookToFind.getYear());
         assertEquals(1, books.size());
     }
+
+    @Test
+    public void whenFindAllByPublisherAndGenreAndYearAndPublisherAndYearAreNull_thenReturnTheBook() {
+        Book bookToFind = BookTestHelper.aBook();
+        bookRepository.saveAll(BookTestHelper.aBookList());
+        List<Book> books =
+                bookRepository.findAllByPublisherAndGenreAndYear
+                        (null, bookToFind.getGenre(), null);
+        assertEquals(2, books.size());
+    }
 }

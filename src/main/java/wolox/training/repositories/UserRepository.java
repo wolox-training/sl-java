@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import wolox.training.models.User;
 
@@ -20,6 +22,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findFirstByUsername(String username);
 
-    List<User> findAllByBirthdateBetweenAndNameIgnoreCaseContaining(LocalDate startDate, LocalDate endDate,
-            String partName);
+    @Query("SELECT u FROM users u "
+            + "WHERE (:startDate IS NULL OR u.birthdate >= :startDate) "
+            + "AND (:endDate IS NULL OR u.birthdate <= :endDate) "
+            + "AND (:partName IS NULL OR LOWER(u.name) LIKE CONCAT('%',LOWER(:partName),'%'))")
+    List<User> findAllByBirthdateBetweenAndNameIgnoreCaseContaining(@Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate, @Param("partName") String partName);
 }
