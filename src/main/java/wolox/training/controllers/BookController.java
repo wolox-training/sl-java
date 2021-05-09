@@ -4,7 +4,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,14 +69,13 @@ public class BookController {
             @ApiResponse(code = 200, message = "Successfully retrieved book"),
             @ApiResponse(code = 201, message = "Successfully created book"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    public ResponseEntity<Object> findByISBN(@PathVariable String isbn) {
-        Optional<Book> bookOptional = bookRepository.findFirstByIsbn(isbn);
-        if (bookOptional.isPresent()) {
-            return ResponseEntity.ok(bookOptional.get());
-        } else {
-            Book book = BookMapper.bookInfoToBook(openLibraryService.bookInfo(isbn), isbn);
-            return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
-        }
+    public ResponseEntity<Book> findByISBN(@PathVariable String isbn) {
+        return bookRepository.findFirstByIsbn(isbn)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(bookRepository.save(BookMapper.bookInfoToBook(openLibraryService.bookInfo(isbn), isbn)))
+                );
     }
 
     /**
