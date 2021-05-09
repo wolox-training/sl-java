@@ -39,7 +39,6 @@ import wolox.training.utils.RouteConstants;
 @AutoConfigureMockMvc
 class BookControllerTest {
 
-    public static final String USER_FIELD_NAME_AUTHOR = "author";
     private static ObjectMapper objectMapper;
     private static List<Book> mockBookList;
     private static Book mockBook;
@@ -103,7 +102,7 @@ class BookControllerTest {
     @Test
     void whenCreatedABookWithNoAuthor_thenReturnBadRequest() throws Exception {
         Map<String, String> map = objectMapper.readValue(jsonBook, Map.class);
-        map.remove(USER_FIELD_NAME_AUTHOR);
+        map.remove(TestConstants.USER_FIELD_NAME_AUTHOR);
         mvc.perform(post(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
                 .content(map.toString())
                 .contentType(MediaType.APPLICATION_JSON))
