@@ -49,7 +49,7 @@ public interface BookRepository extends CrudRepository<Book, Long> {
             @Param("image") String image,
             @Param("title") String title,
             @Param("subtitle") String subtitle,
-            @Param("pages") int pages
+            @Param("pages") Integer pages
     );
 }
 

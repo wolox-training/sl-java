@@ -53,7 +53,7 @@ public class BookController {
             @RequestParam(value = "image", required = false) String image,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "subtitle", required = false) String subtitle,
-            @RequestParam(value = "pages", required = false) int pages
+            @RequestParam(value = "pages", required = false) Integer pages
     ) {
         return bookRepository.findAllWithFilters(publisher, year, genre, author, isbn, image, title, subtitle, pages);
     }
