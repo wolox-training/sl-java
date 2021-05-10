@@ -29,5 +29,27 @@ public interface BookRepository extends CrudRepository<Book, Long> {
     List<Book> findAllByPublisherAndGenreAndYear(@Param("publisher") String publisher,
             @Param("genre") String genre,
             @Param("year") String year);
+
+    @Query("SELECT b FROM Book b "
+            + "WHERE (:publisher IS NULL OR b.publisher = :publisher) "
+            + "AND (:year IS NULL OR b.year = :year) "
+            + "AND (:genre IS NULL OR b.genre = :genre) "
+            + "AND (:author IS NULL OR b.author = :author) "
+            + "AND (:isbn IS NULL OR b.isbn = :isbn) "
+            + "AND (:image IS NULL OR b.image = :image) "
+            + "AND (:title IS NULL OR b.title = :title) "
+            + "AND (:subtitle IS NULL OR b.subtitle = :subtitle) "
+            + "AND (:pages IS NULL OR b.pages = :pages)"
+    )
+    List<Book> findAllWithFilters(@Param("publisher") String publisher,
+            @Param("year") String year,
+            @Param("genre") String genre,
+            @Param("author") String author,
+            @Param("isbn") String isbn,
+            @Param("image") String image,
+            @Param("title") String title,
+            @Param("subtitle") String subtitle,
+            @Param("pages") Integer pages
+    );
 }
 

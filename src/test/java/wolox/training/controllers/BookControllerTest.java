@@ -62,7 +62,9 @@ class BookControllerTest {
     @WithMockUser
     @Test
     void givenAreBooksRegistered_whenFindAll_thenReturnAListOfBooks() throws Exception {
-        Mockito.when(bookRepository.findAll()).thenReturn(mockBookList);
+        Mockito.when(
+                bookRepository.findAllWithFilters(null, null, null, null, null, null, null, null, null))
+                .thenReturn(mockBookList);
         mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

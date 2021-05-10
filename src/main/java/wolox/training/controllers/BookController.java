@@ -44,8 +44,18 @@ public class BookController {
      * @return all the books registered
      */
     @GetMapping
-    public Iterable findAll() {
-        return bookRepository.findAll();
+    public Iterable findAll(
+            @RequestParam(value = "publisher", required = false) String publisher,
+            @RequestParam(value = "year", required = false) String year,
+            @RequestParam(value = "genre", required = false) String genre,
+            @RequestParam(value = "author", required = false) String author,
+            @RequestParam(value = "isbn", required = false) String isbn,
+            @RequestParam(value = "image", required = false) String image,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "subtitle", required = false) String subtitle,
+            @RequestParam(value = "pages", required = false) Integer pages
+    ) {
+        return bookRepository.findAllWithFilters(publisher, year, genre, author, isbn, image, title, subtitle, pages);
     }
 
     /**
