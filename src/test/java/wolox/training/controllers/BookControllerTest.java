@@ -163,4 +163,14 @@ class BookControllerTest {
                 .content(jsonBook))
                 .andExpect(status().isUnauthorized());
     }
+
+    @WithMockUser
+    @Test
+    void givenBookNotExistsInBD_whenFindByISBN_thenSaveBookAndReturnIsCreated() throws Exception {
+        Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
+        mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH + RouteConstants.BOOKS_ISBN_PATH
+                + TestConstants.BOOK_MOCK_EXTERNAL_ISBN)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
 }

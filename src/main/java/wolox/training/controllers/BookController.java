@@ -78,7 +78,7 @@ public class BookController {
 
     }
 
-    @GetMapping(RouteConstants.BOOKS_ISBN_PATH)
+    @GetMapping(RouteConstants.BOOKS_ISBN_PATH + RouteConstants.BOOKS_ISBN_ID)
     @ApiOperation(value = "Find a book by its ISBN code", response = Book.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved book"),
