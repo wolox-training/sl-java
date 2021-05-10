@@ -45,4 +45,15 @@ class UserRepositoryTest {
         );
         assertEquals(1, users.size());
     }
+
+    @Test
+    public void WhenFindAllByBirthdateBetweenAndNameIgnoreCaseContainingAndDatesAreNull_thenReturnUser() {
+        userRepository.saveAll(UserTestHelper.aUserList());
+        List<User> users = userRepository.findAllByBirthdateBetweenAndNameIgnoreCaseContaining(
+                null,
+                null,
+                "REW"
+        );
+        assertEquals(1, users.size());
+    }
 }
