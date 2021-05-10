@@ -17,6 +17,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-validation')
+    compile('org.springframework.boot:spring-boot-starter-security')
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
@@ -24,6 +25,7 @@ dependencies {
     compile('org.springframework.plugin:spring-plugin-core:1.2.0.RELEASE')
     compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testCompile('com.h2database:h2')
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 }

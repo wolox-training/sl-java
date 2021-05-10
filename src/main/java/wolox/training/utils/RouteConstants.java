@@ -9,6 +9,7 @@ public final class RouteConstants {
 
     public static final String USER_BOOKS_PATH = "/books";
     public static final String PATH_VARIABLE_USER_BOOK_ID = "/{bookId}";
+    public static final String USER_PASSWORD_PATH = "/password";
 
     private RouteConstants() {
     }

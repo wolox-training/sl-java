@@ -20,19 +20,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
+import wolox.training.test.TestConstants;
 import wolox.training.test.util.BookTestHelper;
 import wolox.training.utils.MessageError;
 import wolox.training.utils.RouteConstants;
 
-@WebMvcTest(BookController.class)
 @ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class BookControllerTest {
 
     private static ObjectMapper objectMapper;
@@ -55,6 +59,7 @@ class BookControllerTest {
         jsonBookList = objectMapper.writeValueAsString(mockBookList);
     }
 
+    @WithMockUser
     @Test
     void givenAreBooksRegistered_whenFindAll_thenReturnAListOfBooks() throws Exception {
         Mockito.when(bookRepository.findAll()).thenReturn(mockBookList);
@@ -64,19 +69,21 @@ class BookControllerTest {
                 .andExpect(content().json(jsonBookList));
     }
 
+    @WithMockUser
     @Test
     void whenFindByIDExists_thenReturnABook() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
-        mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/1")
+        mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH + TestConstants.BOOK_MOCK_ID_1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonBook));
     }
 
+    @WithMockUser
     @Test
     void whenFindByIDDoesNotExists_thenReturnNotFound() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.empty());
-        mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/1")
+        mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH + TestConstants.BOOK_MOCK_ID_1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(MessageError.BOOK_NOT_FOUND_MSG));
@@ -95,7 +102,7 @@ class BookControllerTest {
     @Test
     void whenCreatedABookWithNoAuthor_thenReturnBadRequest() throws Exception {
         Map<String, String> map = objectMapper.readValue(jsonBook, Map.class);
-        map.remove("author");
+        map.remove(TestConstants.USER_FIELD_NAME_AUTHOR);
         mvc.perform(post(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
                 .content(map.toString())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -103,34 +110,45 @@ class BookControllerTest {
 
     }
 
+    @WithMockUser
     @Test
     void whenDeleteABookThatExists_thenReturnNotContent() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
         doNothing().when(bookRepository).deleteById(anyLong());
-        mvc.perform(delete(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/1")
+        mvc.perform(delete(RouteConstants.BOOK_CONTROLLER_BASE_PATH + TestConstants.BOOK_MOCK_ID_1)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 
+    @WithMockUser
     @Test
     void whenUpdateABookThatExists_thenReturnTheUpdatedBook() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
         Mockito.when(bookRepository.save(any(Book.class))).thenReturn(mockBook);
-        mvc.perform(put(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/0")
+        mvc.perform(put(RouteConstants.BOOK_CONTROLLER_BASE_PATH + TestConstants.BOOK_MOCK_ID_0)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBook))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonBook));
     }
 
+    @WithMockUser
     @Test
     void whenUpdateABookWithIDMissMatch_thenReturnIdMissMatch() throws Exception {
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
         Mockito.when(bookRepository.save(any(Book.class))).thenReturn(mockBook);
-        mvc.perform(put(RouteConstants.BOOK_CONTROLLER_BASE_PATH + "/1")
+        mvc.perform(put(RouteConstants.BOOK_CONTROLLER_BASE_PATH + TestConstants.BOOK_MOCK_ID_1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBook))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(MessageError.BOOK_ID_MISMATCH_MSG));
+    }
+
+    @Test
+    void givenAUserIsNotAuthenticated_whenUpdateABookThatExists_thenReturnUnauthorized() throws Exception {
+        mvc.perform(put(RouteConstants.BOOK_CONTROLLER_BASE_PATH + TestConstants.BOOK_MOCK_ID_0)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBook))
+                .andExpect(status().isUnauthorized());
     }
 }

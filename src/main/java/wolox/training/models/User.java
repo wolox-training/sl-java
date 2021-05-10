@@ -1,6 +1,9 @@
 package wolox.training.models;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static wolox.training.utils.MessageError.CHECK_ARGUMENT_EMPTY_MESSAGE;
+import static wolox.training.utils.MessageError.CHECK_BIRTHDAY_BEFORE_NOW;
 import static wolox.training.utils.MessageError.CHECK_NOT_NULL_MESSAGE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -20,6 +23,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
+import org.springframework.util.ObjectUtils;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotOwnedException;
 import wolox.training.utils.EntityConstants;
@@ -50,6 +54,8 @@ public class User {
     @ManyToMany
     private List<Book> books = new ArrayList<>();
 
+    private String password;
+
     public User() {
     }
 
@@ -62,7 +68,9 @@ public class User {
     }
 
     public void setUsername(String username) {
-        this.username = checkNotNull(username, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(username, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(username), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.username = username;
     }
 
     public String getName() {
@@ -70,7 +78,9 @@ public class User {
     }
 
     public void setName(String name) {
-        this.name = checkNotNull(name, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(name, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(name), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.name = name;
     }
 
     public LocalDate getBirthdate() {
@@ -78,6 +88,7 @@ public class User {
     }
 
     public void setBirthdate(LocalDate birthdate) {
+        checkArgument(birthdate.isBefore(LocalDate.now()), CHECK_BIRTHDAY_BEFORE_NOW);
         this.birthdate = checkNotNull(birthdate, CHECK_NOT_NULL_MESSAGE);
     }
 
@@ -86,7 +97,18 @@ public class User {
     }
 
     public void setBooks(List<Book> books) {
-        this.books = checkNotNull(books, CHECK_NOT_NULL_MESSAGE);
+        checkNotNull(books, CHECK_NOT_NULL_MESSAGE);
+        this.books = books;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        checkNotNull(password, CHECK_NOT_NULL_MESSAGE);
+        checkArgument(!ObjectUtils.isEmpty(password), CHECK_ARGUMENT_EMPTY_MESSAGE);
+        this.password = password;
     }
 
     /**
