@@ -5,6 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -44,7 +47,7 @@ public class BookController {
      * @return all the books registered
      */
     @GetMapping
-    public Iterable findAll(
+    public Page<Book> findAll(
             @RequestParam(value = "publisher", required = false) String publisher,
             @RequestParam(value = "year", required = false) String year,
             @RequestParam(value = "genre", required = false) String genre,
@@ -53,9 +56,11 @@ public class BookController {
             @RequestParam(value = "image", required = false) String image,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "subtitle", required = false) String subtitle,
-            @RequestParam(value = "pages", required = false) Integer pages
+            @RequestParam(value = "pages", required = false) Integer pages,
+            @PageableDefault() Pageable pageable
     ) {
-        return bookRepository.findAllWithFilters(publisher, year, genre, author, isbn, image, title, subtitle, pages);
+        return bookRepository
+                .findAllWithFilters(publisher, year, genre, author, isbn, image, title, subtitle, pages, pageable);
     }
 
     /**
