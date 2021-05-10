@@ -1,7 +1,10 @@
 package wolox.training.repositories;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +29,20 @@ class UserRepositoryTest {
 
     @Test
     public void whenFindFirstByUsername_thenReturnFirstUserWithUsername() {
-        userRepository.save(UserTestHelper.aUserList().get(0));
-        userRepository.save(UserTestHelper.aUserList().get(1));
-        userRepository.save(UserTestHelper.aUserList().get(2));
+        userRepository.saveAll(UserTestHelper.aUserList());
         User user = userRepository.findFirstByUsername(TestConstants.USER_MOCK_USERNAME_NAME).orElseThrow(
                 null);
         assertNotNull(user);
+    }
+
+    @Test
+    public void WhenFindAllByBirthdateBetweenAndNameIgnoreCaseContaining_thenReturnUser() {
+        userRepository.saveAll(UserTestHelper.aUserList());
+        List<User> users = userRepository.findAllByBirthdateBetweenAndNameIgnoreCaseContaining(
+                LocalDate.of(1990, 1, 1),
+                LocalDate.of(2020, 12, 31),
+                "REW"
+        );
+        assertEquals(1, users.size());
     }
 }

@@ -15,7 +15,7 @@ public class UserTestHelper {
         User user1 = new User();
         user1.setUsername("stelome");
         user1.setName("andrew");
-        user1.setBirthdate(LocalDate.of(1997, 5, 23));
+        user1.setBirthdate(LocalDate.of(1992, 7, 23));
         user1.setPassword("12345678");
         return user1;
     }
@@ -24,17 +24,17 @@ public class UserTestHelper {
         User user1 = new User();
         user1.setUsername("esfrrr");
         user1.setName("pedro");
-        user1.setBirthdate(LocalDate.of(1997, 5, 23));
+        user1.setBirthdate(LocalDate.of(2000, 5, 23));
 
         User user2 = new User();
         user2.setUsername("stelome");
         user2.setName("andrew");
-        user2.setBirthdate(LocalDate.of(1997, 5, 23));
+        user2.setBirthdate(LocalDate.of(1992, 7, 23));
 
         User user3 = new User();
         user3.setUsername("adessse");
         user3.setName("anibal");
-        user3.setBirthdate(LocalDate.of(1997, 5, 23));
+        user3.setBirthdate(LocalDate.of(1922, 5, 23));
 
         return Arrays.asList(user1, user2, user3);
     }
