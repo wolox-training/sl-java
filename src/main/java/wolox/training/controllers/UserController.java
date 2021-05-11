@@ -6,6 +6,9 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,11 +48,14 @@ public class UserController {
     /**
      * Get all the users registered
      *
+     * @param pageable: page and size for paging (Pageable)
+     *
      * @return all the users registered
      */
+
     @GetMapping()
-    public Iterable findAll() {
-        return userRepository.findAll();
+    public Page<User> findAll(@PageableDefault(page = 0, size = 3) Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     /**

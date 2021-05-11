@@ -3,11 +3,13 @@ package wolox.training.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import wolox.training.models.Book;
 import wolox.training.test.TestConstants;
@@ -38,19 +40,22 @@ class BookRepositoryTest {
     public void whenFindAllByPublisherAndGenreAndYear_thenReturnTheBook() {
         Book bookToFind = BookTestHelper.aBook();
         bookRepository.saveAll(BookTestHelper.aBookList());
-        List<Book> books =
+        Page<Book> books =
                 bookRepository.findAllByPublisherAndGenreAndYear
-                        (bookToFind.getPublisher(), bookToFind.getGenre(), bookToFind.getYear());
-        assertEquals(1, books.size());
+                        (bookToFind.getPublisher(), bookToFind.getGenre(), bookToFind.getYear(),
+                                PageRequest.of(TestConstants.DEFAULT_PAGE_NUMBER, TestConstants.DEFAULT_PAGE_SIZE,
+                                        Sort.unsorted()));
+        assertEquals(1, books.getTotalElements());
     }
 
     @Test
     public void whenFindAllByPublisherAndGenreAndYearAndPublisherAndYearAreNull_thenReturnTheBook() {
         Book bookToFind = BookTestHelper.aBook();
         bookRepository.saveAll(BookTestHelper.aBookList());
-        List<Book> books =
-                bookRepository.findAllByPublisherAndGenreAndYear
-                        (null, bookToFind.getGenre(), null);
-        assertEquals(2, books.size());
+        Page<Book> books =
+                bookRepository.findAllByPublisherAndGenreAndYear(null, bookToFind.getGenre(), null,
+                        PageRequest.of(TestConstants.DEFAULT_PAGE_NUMBER, TestConstants.DEFAULT_PAGE_SIZE,
+                                Sort.unsorted()));
+        assertEquals(2, books.getTotalElements());
     }
 }

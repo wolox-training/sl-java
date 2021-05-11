@@ -25,6 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -78,11 +83,13 @@ class UserControllerTest {
     @WithMockUser
     @Test
     void givenAreUsersRegistered_whenFindAll_thenReturnAListOfUsers() throws Exception {
-        Mockito.when(userRepository.findAll()).thenReturn(mockUserList);
+        Page<User> userPage = new PageImpl<User>(mockUserList, PageRequest.of(TestConstants.DEFAULT_PAGE_NUMBER,
+                TestConstants.DEFAULT_PAGE_SIZE, Sort.unsorted()), mockUserList.size());
+        Mockito.when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
         mvc.perform(get(RouteConstants.USERS_CONTROLLER_BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(jsonUserList));
+                .andExpect(content().json(objectMapper.writeValueAsString(userPage)));
     }
 
     @WithMockUser

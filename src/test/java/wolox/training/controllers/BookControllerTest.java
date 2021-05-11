@@ -2,6 +2,7 @@ package wolox.training.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,6 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -62,13 +68,17 @@ class BookControllerTest {
     @WithMockUser
     @Test
     void givenAreBooksRegistered_whenFindAll_thenReturnAListOfBooks() throws Exception {
+        Page<Book> bookPage = new PageImpl<Book>(mockBookList, PageRequest.of(TestConstants.DEFAULT_PAGE_NUMBER,
+                TestConstants.DEFAULT_PAGE_SIZE, Sort.unsorted()), mockBookList.size());
         Mockito.when(
-                bookRepository.findAllWithFilters(null, null, null, null, null, null, null, null, null))
-                .thenReturn(mockBookList);
+                bookRepository.findAllWithFilters(eq(null), eq(null), eq(null), eq(null),
+                        eq(null), eq(null), eq(null), eq(null), eq(null),
+                        any(Pageable.class)))
+                .thenReturn((bookPage));
         mvc.perform(get(RouteConstants.BOOK_CONTROLLER_BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(jsonBookList));
+                .andExpect(content().json(objectMapper.writeValueAsString(bookPage)));
     }
 
     @WithMockUser
