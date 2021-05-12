@@ -224,8 +224,7 @@ class UserControllerTest {
     @Test
     void WhenRemoveBookToUserDidNotHave_thenReturnUserNotOwnTheBook() throws Exception {
         User mockUserWithABook = UserTestHelper.aUser();
-        Book book = BookTestHelper.aBook();
-        mockUserWithABook.addBook(book);
+        mockUserWithABook.addBook(BookTestHelper.aBookList().get(0));
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(mockUserWithABook));
         Mockito.when(bookRepository.findById(anyLong())).thenReturn(Optional.of(BookTestHelper.aBook()));
 
