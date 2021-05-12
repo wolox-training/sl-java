@@ -7,6 +7,7 @@ import static wolox.training.utils.MessageError.CHECK_BIRTHDAY_BEFORE_NOW;
 import static wolox.training.utils.MessageError.CHECK_NOT_NULL_MESSAGE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -17,40 +18,48 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 import org.springframework.util.ObjectUtils;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotOwnedException;
 import wolox.training.utils.EntityConstants;
 import wolox.training.utils.MessageError;
 
-@Data
+@Getter
+@ToString
+@EqualsAndHashCode
 @Entity(name = EntityConstants.USERS_ENTITY_NAME)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = EntityConstants.USER_DISCRIMINATOR_COLUMN, discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue(value = EntityConstants.USER_DISCRIMINATOR_VALUE)
 @ApiModel(description = "Users from the Training APP")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_SEQ")
-    @SequenceGenerator(name = "USER_SEQ", sequenceName = "USER_SEQ")
-    @Setter(AccessLevel.NONE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityConstants.USER_SEQ)
+    @SequenceGenerator(name = EntityConstants.USER_SEQ, sequenceName = EntityConstants.USER_SEQ)
     private long id;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String username;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String name;
 
     @NotNull
@@ -58,17 +67,22 @@ public class User {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @ApiModelProperty(value = "The format of the birthday must be dd-MM-yyyy", example = "13-03-1989")
-    @Setter(AccessLevel.NONE)
     private LocalDate birthdate;
 
     @NotNull
     @ManyToMany
-    @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     private List<Book> books = new ArrayList<>();
 
-    @Setter(AccessLevel.NONE)
     private String password;
+
+    @Transient
+    @JsonProperty("user_type")
+    private String userType;
+
+    public User() {
+        userType = getClass().getAnnotation(DiscriminatorValue.class).value();
+    }
 
     public void setUsername(String username) {
         checkNotNull(username, CHECK_NOT_NULL_MESSAGE);
