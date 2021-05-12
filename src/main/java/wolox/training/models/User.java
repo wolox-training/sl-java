@@ -22,25 +22,35 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.util.ObjectUtils;
 import wolox.training.exceptions.BookAlreadyOwnedException;
 import wolox.training.exceptions.BookNotOwnedException;
 import wolox.training.utils.EntityConstants;
 import wolox.training.utils.MessageError;
 
+@Data
 @Entity(name = EntityConstants.USERS_ENTITY_NAME)
 @ApiModel(description = "Users from the Training APP")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_SEQ")
+    @SequenceGenerator(name = "USER_SEQ", sequenceName = "USER_SEQ")
+    @Setter(AccessLevel.NONE)
     private long id;
 
     @NotNull
+    @Setter(AccessLevel.NONE)
     private String username;
 
     @NotNull
+    @Setter(AccessLevel.NONE)
     private String name;
 
     @NotNull
@@ -48,24 +58,17 @@ public class User {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @ApiModelProperty(value = "The format of the birthday must be dd-MM-yyyy", example = "13-03-1989")
+    @Setter(AccessLevel.NONE)
     private LocalDate birthdate;
 
     @NotNull
     @ManyToMany
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     private List<Book> books = new ArrayList<>();
 
+    @Setter(AccessLevel.NONE)
     private String password;
-
-    public User() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
 
     public void setUsername(String username) {
         checkNotNull(username, CHECK_NOT_NULL_MESSAGE);
@@ -73,18 +76,10 @@ public class User {
         this.username = username;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         checkNotNull(name, CHECK_NOT_NULL_MESSAGE);
         checkArgument(!ObjectUtils.isEmpty(name), CHECK_ARGUMENT_EMPTY_MESSAGE);
         this.name = name;
-    }
-
-    public LocalDate getBirthdate() {
-        return birthdate;
     }
 
     public void setBirthdate(LocalDate birthdate) {
@@ -99,10 +94,6 @@ public class User {
     public void setBooks(List<Book> books) {
         checkNotNull(books, CHECK_NOT_NULL_MESSAGE);
         this.books = books;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public void setPassword(String password) {
@@ -133,16 +124,5 @@ public class User {
         if (!books.remove(book)) {
             throw new BookNotOwnedException(MessageError.BOOK_NOT_OWNED_MSG);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", birthdate=" + birthdate +
-                ", books=" + books +
-                '}';
     }
 }
