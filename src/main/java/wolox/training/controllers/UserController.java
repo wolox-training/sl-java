@@ -114,7 +114,7 @@ public class UserController {
      */
     @PutMapping(RouteConstants.PATH_VARIABLE_USER_ID)
     public User update(@PathVariable long id, @RequestBody User user) {
-        if (!user.getId().equals(id)) {
+        if (user.getId() != id) {
             throw new IdMismatchException(MessageError.USER_ID_MISMATCH_MSG);
         }
         User userBD = findOne(id);
