@@ -26,7 +26,6 @@ import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.ObjectUtils;
 import wolox.training.exceptions.BookAlreadyOwnedException;
@@ -46,11 +45,9 @@ public class User {
     private long id;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String username;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String name;
 
     @NotNull
@@ -58,16 +55,12 @@ public class User {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @ApiModelProperty(value = "The format of the birthday must be dd-MM-yyyy", example = "13-03-1989")
-    @Setter(AccessLevel.NONE)
     private LocalDate birthdate;
 
     @NotNull
     @ManyToMany
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private List<Book> books = new ArrayList<>();
 
-    @Setter(AccessLevel.NONE)
     private String password;
 
     public void setUsername(String username) {

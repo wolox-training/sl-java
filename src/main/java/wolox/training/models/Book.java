@@ -29,35 +29,27 @@ public class Book {
     private String genre;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String author;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String image;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String title;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String subtitle;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String publisher;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String year;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private int pages;
 
     @NotNull
-    @Setter(AccessLevel.NONE)
     private String isbn;
 
     public void setAuthor(String author) {
