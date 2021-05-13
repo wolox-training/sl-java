@@ -15,14 +15,15 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 import org.springframework.util.ObjectUtils;
+import wolox.training.utils.EntityConstants;
 
 @Data
 @Entity
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOK_SEQ")
-    @SequenceGenerator(name = "BOOK_SEQ", sequenceName = "BOOK_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityConstants.BOOK_SEQ)
+    @SequenceGenerator(name = EntityConstants.BOOK_SEQ, sequenceName = EntityConstants.BOOK_SEQ)
     @Setter(AccessLevel.NONE)
     private long id;
 

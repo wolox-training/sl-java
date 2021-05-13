@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import wolox.training.models.Professor;
+import wolox.training.models.Student;
 import wolox.training.models.User;
 
 
@@ -17,6 +19,26 @@ public class UserTestHelper {
         user1.setName("andrew");
         user1.setBirthdate(LocalDate.of(1992, 7, 23));
         user1.setPassword("12345678");
+        return user1;
+    }
+
+    public static Student aStudent() {
+        Student user1 = new Student();
+        user1.setUsername("stelome");
+        user1.setName("andrew");
+        user1.setBirthdate(LocalDate.of(1992, 7, 23));
+        user1.setPassword("12345678");
+        user1.setYear("2012");
+        return user1;
+    }
+
+    public static Professor aProfessor() {
+        Professor user1 = new Professor();
+        user1.setUsername("stelome");
+        user1.setName("andrew");
+        user1.setBirthdate(LocalDate.of(1992, 7, 23));
+        user1.setPassword("12345678");
+        user1.setSubject("Math");
         return user1;
     }
 
